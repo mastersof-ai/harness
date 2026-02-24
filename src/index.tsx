@@ -85,6 +85,19 @@ if (getFlag("list-agents")) {
 
 const agentName = getFlagValue("agent") ?? config.defaultAgent ?? DEFAULT_AGENT;
 const agentContext = resolveAgent(agentName);
+
+// Sandbox gate: re-exec under bwrap if --sandbox and not already sandboxed
+if (getFlag("sandbox") && !process.env.HARNESS_SANDBOXED) {
+  const { loadSandboxConfig, execInSandbox } = await import("./sandbox.js");
+  const sandboxConfig = loadSandboxConfig(agentContext);
+  if (!sandboxConfig) {
+    console.error(`No sandbox config found at ~/.mastersof-ai/agents/${agentName}/sandbox.json`);
+    process.exit(1);
+  }
+  const filteredArgv = process.argv.filter((a) => a !== "--sandbox");
+  execInSandbox(agentContext, sandboxConfig, filteredArgv);
+}
+
 const sessionDirs = { sessionsDir: agentContext.sessionsDir, lastSessionFile: agentContext.lastSessionFile };
 
 // --- Flag: --message (headless mode) ---

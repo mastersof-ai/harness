@@ -1,0 +1,8 @@
+{
+  "project": "~/Projects/mastersof-ai-harness",
+  "mounts": [
+    { "path": "~/Projects/MastersOfAI", "mode": "rw" }
+  ],
+  "env": ["HOME", "PATH", "TERM", "EDITOR", "BRAVE_API_KEY", "XDG_CONFIG_HOME"],
+  "network": "host"
+}
