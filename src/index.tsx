@@ -89,7 +89,7 @@ const agentContext = resolveAgent(agentName);
 // Sandbox gate: re-exec under bwrap if --sandbox and not already sandboxed
 if (getFlag("sandbox") && !process.env.HARNESS_SANDBOXED) {
   const { loadSandboxConfig, execInSandbox } = await import("./sandbox.js");
-  const sandboxConfig = loadSandboxConfig(agentContext);
+  const sandboxConfig = loadSandboxConfig(agentContext, { autoCreate: true });
   if (!sandboxConfig) {
     console.error(`No sandbox config found at ~/.mastersof-ai/agents/${agentName}/sandbox.json`);
     process.exit(1);

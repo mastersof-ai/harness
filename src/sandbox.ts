@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { AgentContext } from "./agent-context.js";
 
@@ -23,9 +23,20 @@ function expandHome(p: string): string {
   return p.startsWith("~/") ? join(HOME, p.slice(2)) : p;
 }
 
-export function loadSandboxConfig(ctx: AgentContext): SandboxConfig | null {
+export function loadSandboxConfig(ctx: AgentContext, opts?: { autoCreate?: boolean }): SandboxConfig | null {
   const configPath = join(ctx.agentDir, "sandbox.json");
-  if (!existsSync(configPath)) return null;
+  if (!existsSync(configPath)) {
+    if (!opts?.autoCreate) return null;
+    const defaultConfig: SandboxConfig = {
+      project: process.cwd(),
+      env: ["HOME", "PATH", "TERM"],
+      network: "host",
+    };
+    mkdirSync(ctx.agentDir, { recursive: true });
+    writeFileSync(configPath, `${JSON.stringify(defaultConfig, null, 2)}\n`);
+    console.error(`Created default sandbox config at ${configPath}`);
+    return defaultConfig;
+  }
   const raw = JSON.parse(readFileSync(configPath, "utf-8")) as SandboxConfig;
   if (raw.enabled === false) return null;
   return raw;
