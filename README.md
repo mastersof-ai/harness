@@ -1,16 +1,8 @@
 # @mastersof-ai/harness
 
-Multi-agent runtime built on the Claude Agent SDK.
+Define agents in markdown. Control the entire system prompt. No hidden framework instructions coloring your agent's behavior.
 
-Run your own agents, with full control of the system prompt and context.
-
-Agent environments that wrap Claude Code, implicitly use the Claude Code System prompt.   This 'colors the context' of agents in these environments towards being a coder.
-
-In this harness, you control the system prompt.  Your agent will begin its life purely with the identity you give it, and nothing more.
-
-Feel the difference when you use pure context and interact as close to the model as possible.
-
-Powered by your Claude Code Subscription, via the Claude Agent SDK.  Also includes persistent memory, tools, subagents, optional sandboxing, and a full TUI.
+Write an `IDENTITY.md`, run `mastersof-ai`, and your agent starts with exactly the context you gave it — nothing more. Persistent memory, built-in tools, sub-agents, sandboxing, and a terminal UI. Powered by your Claude Code subscription via the Claude Agent SDK.
 
 ## Install
 
@@ -43,7 +35,7 @@ mastersof-ai create my-agent
 
 This creates `~/.mastersof-ai/agents/my-agent/` with a template `IDENTITY.md`. Edit the identity file to customize your agent's personality, instructions, and behavior.
 
-## Architecture
+## How It Works
 
 - **Identity is markdown.** Each agent is defined by an `IDENTITY.md` file — no code required.
 - **Persistent memory.** Agents read and write to `~/.mastersof-ai/agents/{name}/memory/`. Context survives across sessions.

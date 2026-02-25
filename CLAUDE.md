@@ -2,7 +2,8 @@
 
 ## Related Docs
 
-- **DESIGN.md**
+- **DESIGN.md** — overview with links to docs/
+- **docs/** — architecture, agents, tools, configuration, sandbox, design decisions
 
 ## Quick Orientation
 
