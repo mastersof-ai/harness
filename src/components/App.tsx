@@ -2,6 +2,7 @@ import type { Query } from "@anthropic-ai/claude-agent-sdk";
 import { Box, Text, useApp, useInput } from "ink";
 import { Marked } from "marked";
 import { markedTerminal } from "marked-terminal";
+import { basename } from "node:path";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { buildOptions, buildSystemPrompt, sendMessage } from "../agent.js";
 import type { AgentContext } from "../agent-context.js";
@@ -241,6 +242,7 @@ export interface AppProps {
 export function App({ initialSessionId, initialSessionName, agentContext, config }: AppProps) {
   const { exit } = useApp();
 
+  const cwdName = useMemo(() => basename(process.cwd()), []);
   const banner = useMemo(() => agentBanner(agentContext.name), [agentContext.name]);
   const sessionDirs: SessionDirs = useMemo(
     () => ({ sessionsDir: agentContext.sessionsDir, lastSessionFile: agentContext.lastSessionFile }),
@@ -576,7 +578,7 @@ export function App({ initialSessionId, initialSessionName, agentContext, config
     [state.sessionId, state.lastListing, exit, sessionDirs, processMessage],
   );
 
-  const showStatusLine = ctrlCWarning || state.sessionId !== null || state.sessionName !== null || queueCount > 0;
+  const showSessionLine = ctrlCWarning || state.sessionName !== null || queueCount > 0;
 
   return (
     <Box flexDirection="column">
@@ -598,19 +600,7 @@ export function App({ initialSessionId, initialSessionName, agentContext, config
       )}
 
       <Box marginTop={1} flexDirection="column">
-        {showStatusLine && (
-          <Box justifyContent="space-between">
-            {ctrlCWarning ? (
-              <Text color="yellow"> Press Ctrl-C again to exit</Text>
-            ) : (
-              <Box>
-                {state.sessionName ? <Text dimColor> {truncate(state.sessionName, 40)}</Text> : <Text> </Text>}
-                {queueCount > 0 && <Text color="yellow"> ({queueCount} queued)</Text>}
-              </Box>
-            )}
-            <ContextBar tokens={state.contextTokens} />
-          </Box>
-        )}
+        <Text dimColor>{"─".repeat(process.stdout.columns || 80)}</Text>
         <InputArea
           isDisabled={false}
           isStreaming={state.isStreaming}
@@ -618,6 +608,29 @@ export function App({ initialSessionId, initialSessionName, agentContext, config
           resetKey={state.inputKey}
           history={historyRef.current}
         />
+        <Text dimColor>{"─".repeat(process.stdout.columns || 80)}</Text>
+        <Box justifyContent="space-between">
+          <Box>
+            <Text color="cyan" dimColor> {cwdName}</Text>
+            <Text dimColor>  ·  </Text>
+            <Text color="magenta">{agentContext.name}</Text>
+            <Text dimColor>  ·  </Text>
+            <Text dimColor>{config.model}</Text>
+          </Box>
+          <ContextBar tokens={state.contextTokens} />
+        </Box>
+        {showSessionLine && (
+          <Box>
+            {ctrlCWarning ? (
+              <Text color="yellow"> Press Ctrl-C again to exit</Text>
+            ) : (
+              <Box>
+                {state.sessionName && <Text dimColor> {truncate(state.sessionName, 40)}</Text>}
+                {queueCount > 0 && <Text color="yellow"> ({queueCount} queued)</Text>}
+              </Box>
+            )}
+          </Box>
+        )}
       </Box>
     </Box>
   );
