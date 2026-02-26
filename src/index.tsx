@@ -1,6 +1,6 @@
+import React from "react";
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { createInterface } from "node:readline";
 import { render } from "ink";
 import { buildOptions, buildSystemPrompt, sendMessage } from "./agent.js";
 import { DEFAULT_AGENT, getAgentsDir, resolveAgent } from "./agent-context.js";
@@ -187,38 +187,15 @@ if (messageIdx !== -1) {
         }
       }
     } else {
+      // No argument — resume most recent session
+      // Use /sessions + /resume #N inside the TUI for browsing
       const sessions = await listSessions(sessionDirs);
-      const top10 = sessions.slice(0, 10);
-
-      if (top10.length === 0) {
+      if (sessions.length === 0) {
         console.error("No sessions found.");
         process.exit(1);
       }
-
-      console.log("Pick a session to resume:\n");
-      for (let i = 0; i < top10.length; i++) {
-        const s = top10[i];
-        console.log(`  ${i + 1}. ${s.name}  (${relativeTime(s.lastUsedAt)})`);
-      }
-
-      const rl = createInterface({ input: process.stdin, output: process.stdout });
-      const choice = await new Promise<string>((resolve) => {
-        rl.question("\n  > ", (answer) => {
-          rl.close();
-          resolve(answer.trim());
-        });
-      });
-
-      const num = parseInt(choice, 10);
-      if (num < 1 || num > top10.length || Number.isNaN(num)) {
-        console.error("Invalid selection.");
-        process.exit(1);
-      }
-
-      const picked = top10[num - 1];
-      initialSessionId = picked.id;
-      initialSessionName = picked.name;
-      console.log(`\nResuming: "${picked.name}"\n`);
+      initialSessionId = sessions[0].id;
+      initialSessionName = sessions[0].name;
     }
   }
 
