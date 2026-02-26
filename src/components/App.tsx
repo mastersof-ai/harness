@@ -1,9 +1,8 @@
-import React from "react";
 import type { Query } from "@anthropic-ai/claude-agent-sdk";
 import { Box, Text, useApp, useInput } from "ink";
 import { Marked } from "marked";
 import { markedTerminal } from "marked-terminal";
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { buildOptions, buildSystemPrompt, sendMessage } from "../agent.js";
 import type { AgentContext } from "../agent-context.js";
 import type { HarnessConfig } from "../config.js";
@@ -168,9 +167,7 @@ function reducer(state: AppState, action: Action): AppState {
     case "MESSAGE_COMPLETE":
       return {
         ...state,
-        messages: action.rendered
-          ? [...state.messages, assistantMsg(action.rendered)]
-          : state.messages,
+        messages: action.rendered ? [...state.messages, assistantMsg(action.rendered)] : state.messages,
         lastResponse: null,
         streamBuffer: "",
         thinkingBuffer: "",
@@ -575,7 +572,7 @@ export function App({ initialSessionId, initialSessionName, agentContext, config
     [state.sessionId, state.lastListing, exit, sessionDirs, processMessage],
   );
 
-  const showSessionLine = ctrlCWarning || state.sessionName !== null || queueCount > 0;
+  const showSessionLine = ctrlCWarning || queueCount > 0;
 
   return (
     <Box flexDirection="column">
@@ -609,9 +606,9 @@ export function App({ initialSessionId, initialSessionName, agentContext, config
         <Box justifyContent="space-between">
           <Box>
             <Text color="magenta"> {agentContext.name}</Text>
-            <Text dimColor>  ·  </Text>
+            <Text dimColor> · </Text>
             <Text dimColor>{config.model}</Text>
-            {process.env.HARNESS_SANDBOXED && <Text dimColor>  ·  🔒</Text>}
+            {process.env.HARNESS_SANDBOXED && <Text dimColor> · 🔒</Text>}
           </Box>
           <ContextBar tokens={state.contextTokens} />
         </Box>
@@ -620,10 +617,7 @@ export function App({ initialSessionId, initialSessionName, agentContext, config
             {ctrlCWarning ? (
               <Text color="yellow"> Press Ctrl-C again to exit</Text>
             ) : (
-              <Box>
-                {state.sessionName && <Text dimColor> {truncate(state.sessionName, 40)}</Text>}
-                {queueCount > 0 && <Text color="yellow"> ({queueCount} queued)</Text>}
-              </Box>
+              <Box>{queueCount > 0 && <Text color="yellow"> ({queueCount} queued)</Text>}</Box>
             )}
           </Box>
         )}

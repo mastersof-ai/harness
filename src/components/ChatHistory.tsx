@@ -1,5 +1,5 @@
-import React from "react";
 import { Static } from "ink";
+import React from "react";
 import { Message, type MessageData } from "./Message.js";
 
 interface ChatHistoryProps {

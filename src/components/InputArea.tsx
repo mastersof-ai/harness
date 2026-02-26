@@ -1,5 +1,5 @@
-import React from "react";
 import { Box, Text, useStdout } from "ink";
+import React from "react";
 import { MultilineInput } from "./MultilineInput.js";
 
 interface InputAreaProps {

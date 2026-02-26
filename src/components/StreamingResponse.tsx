@@ -1,5 +1,5 @@
-import React from "react";
 import { Box, Text } from "ink";
+import React from "react";
 import type { ToolAction } from "./App.js";
 import { ThinkingAnimation } from "./ThinkingAnimation.js";
 

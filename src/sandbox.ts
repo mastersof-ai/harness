@@ -64,7 +64,15 @@ function buildBwrapArgs(ctx: AgentContext, config: SandboxConfig, agentEnv?: Rec
   for (const dir of ["/usr", "/lib", "/lib64", "/bin", "/sbin"]) {
     args.push(...roBind(dir));
   }
-  for (const f of ["/etc/resolv.conf", "/etc/ssl", "/etc/ca-certificates", "/etc/passwd", "/etc/group", "/etc/localtime", "/etc/timezone"]) {
+  for (const f of [
+    "/etc/resolv.conf",
+    "/etc/ssl",
+    "/etc/ca-certificates",
+    "/etc/passwd",
+    "/etc/group",
+    "/etc/localtime",
+    "/etc/timezone",
+  ]) {
     args.push(...roBind(f));
   }
 
@@ -163,7 +171,12 @@ function buildBwrapArgs(ctx: AgentContext, config: SandboxConfig, agentEnv?: Rec
   return args;
 }
 
-export function execInSandbox(ctx: AgentContext, config: SandboxConfig, argv: string[], agentEnv?: Record<string, string>): never {
+export function execInSandbox(
+  ctx: AgentContext,
+  config: SandboxConfig,
+  argv: string[],
+  agentEnv?: Record<string, string>,
+): never {
   // Ensure rw directories exist before bwrap tries to bind-mount them
   for (const dir of [ctx.memoryDir, ctx.stateDir, ctx.sessionsDir, ctx.proposalsDir, ctx.workspaceDir]) {
     mkdirSync(dir, { recursive: true });

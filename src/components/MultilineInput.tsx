@@ -1,6 +1,5 @@
-import React from "react";
 import { Box, Text, useInput } from "ink";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { openEditorSync } from "../lib/editor.js";
 import { inkClear } from "../lib/ink-clear.js";
 

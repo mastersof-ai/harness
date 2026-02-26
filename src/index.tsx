@@ -1,7 +1,7 @@
-import React from "react";
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { render } from "ink";
+import React from "react";
 import { buildOptions, buildSystemPrompt, sendMessage } from "./agent.js";
 import { DEFAULT_AGENT, getAgentsDir, resolveAgent } from "./agent-context.js";
 import { App } from "./components/App.js";
@@ -10,7 +10,7 @@ import { createAgent } from "./create-agent.js";
 import { loadAgentEnv } from "./env.js";
 import { isFirstRun, runFirstRun } from "./first-run.js";
 import { setInkClear } from "./lib/ink-clear.js";
-import { findSessionByName, listSessions, loadSession, relativeTime } from "./sessions.js";
+import { findSessionByName, listSessions, loadSession } from "./sessions.js";
 
 // --- Arg parsing ---
 
