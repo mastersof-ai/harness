@@ -25,7 +25,7 @@
   },
   "type": "module",
   "bin": {
-    "mastersof-ai": "./bin/mastersof-ai.js"
+    "mastersof-ai": "bin/mastersof-ai.js"
   },
   "files": [
     "bin/",
