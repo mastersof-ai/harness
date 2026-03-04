@@ -1,5 +1,5 @@
 import { Box, Text, useInput } from "ink";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { openEditorSync } from "../lib/editor.js";
 import { inkClear } from "../lib/ink-clear.js";
 
@@ -218,44 +218,10 @@ export function MultilineInput({
         return;
       }
 
-      // ── Terminal key sequences (not parsed by Ink) ────────────────
-      // Ink sees the ESC prefix and sets key.escape = true, passing
-      // the rest of the sequence as input.
-
-      if (key.escape) {
-        // Home: ESC[H or ESCOH
-        if (input === "[H" || input === "OH") {
-          setState((s) => ({ ...s, col: 0 }));
-          return;
-        }
-        // End: ESC[F or ESCOF
-        if (input === "[F" || input === "OF") {
-          setState((s) => ({ ...s, col: s.lines[s.row].length }));
-          return;
-        }
-        // Delete: ESC[3~
-        if (input === "[3~") {
-          setState(({ lines, row, col }) => {
-            if (col < lines[row].length) {
-              const next = [...lines];
-              next[row] = lines[row].slice(0, col) + lines[row].slice(col + 1);
-              return { lines: next, row, col };
-            }
-            if (row < lines.length - 1) {
-              const next = [...lines];
-              next[row] += lines[row + 1];
-              next.splice(row + 1, 1);
-              return { lines: next, row, col };
-            }
-            return { lines, row, col };
-          });
-          return;
-        }
-      }
-
       // ── Clear ────────────────────────────────────────────────────
+      // Home/End/Delete are handled via raw stdin data listener below.
+      // Guard against escape sequences so only bare Escape clears input.
 
-      // Bare escape → clear input (skip during streaming — App handles interrupt)
       if (key.escape && !input && !isStreaming) {
         setState({ lines: [""], row: 0, col: 0 });
         setHistoryIndex(-1);
@@ -400,6 +366,48 @@ export function MultilineInput({
     },
     { isActive: !isDisabled },
   );
+
+  // ── Home / End / Delete via raw stdin data ──────────────────
+  // Ink's useInput doesn't surface these keys. Listening on raw
+  // stdin "data" catches the escape sequences before readline
+  // parsing, which works across terminals including tmux.
+  useEffect(() => {
+    if (isDisabled) return;
+
+    const handleData = (data: Buffer) => {
+      const seq = data.toString();
+      // Home: \x1b[H, \x1bOH, \x1b[1~, \x1b[7~
+      if (seq === "\x1b[H" || seq === "\x1bOH" || seq === "\x1b[1~" || seq === "\x1b[7~") {
+        setState((s) => ({ ...s, col: 0 }));
+      }
+      // End: \x1b[F, \x1bOF, \x1b[4~, \x1b[8~
+      else if (seq === "\x1b[F" || seq === "\x1bOF" || seq === "\x1b[4~" || seq === "\x1b[8~") {
+        setState((s) => ({ ...s, col: s.lines[s.row].length }));
+      }
+      // Delete: \x1b[3~
+      else if (seq === "\x1b[3~") {
+        setState(({ lines, row, col }) => {
+          if (col < lines[row].length) {
+            const next = [...lines];
+            next[row] = lines[row].slice(0, col) + lines[row].slice(col + 1);
+            return { lines: next, row, col };
+          }
+          if (row < lines.length - 1) {
+            const next = [...lines];
+            next[row] += lines[row + 1];
+            next.splice(row + 1, 1);
+            return { lines: next, row, col };
+          }
+          return { lines, row, col };
+        });
+      }
+    };
+
+    process.stdin.on("data", handleData);
+    return () => {
+      process.stdin.removeListener("data", handleData);
+    };
+  }, [isDisabled]);
 
   const isEmpty = state.lines.length === 1 && state.lines[0] === "";
 
