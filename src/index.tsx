@@ -94,10 +94,8 @@ process.chdir(agentContext.workspaceDir);
 // so decrypted values are available for passthrough into bwrap
 const agentEnvKeys = loadAgentEnv(agentContext.agentDir);
 
-// Sandbox gate: default on for Linux, off for other platforms
-// --no-sandbox to disable, --sandbox to force (backwards compat)
-const isLinux = process.platform === "linux";
-const sandboxEnabled = getFlag("sandbox") || (isLinux && !getFlag("no-sandbox"));
+// Sandbox gate: opt-in on all platforms via --sandbox flag
+const sandboxEnabled = getFlag("sandbox");
 
 if (sandboxEnabled && !process.env.HARNESS_SANDBOXED) {
   // Check for bwrap
@@ -106,7 +104,6 @@ if (sandboxEnabled && !process.env.HARNESS_SANDBOXED) {
   } catch {
     console.error("Sandbox requires bubblewrap (bwrap) but it's not installed.");
     console.error("  Install: sudo apt install bubblewrap");
-    console.error("  Or run:  mastersof-ai --no-sandbox");
     process.exit(1);
   }
 
