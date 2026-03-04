@@ -1,4 +1,5 @@
 import { existsSync, readdirSync } from "node:fs";
+import { homedir } from "node:os";
 import { join } from "node:path";
 import { render } from "ink";
 import React from "react";
@@ -80,6 +81,21 @@ if (getFlag("list-agents")) {
     console.log("No agents found. Run: mastersof-ai --init");
   }
   process.exit(0);
+}
+
+// --- Auth check ---
+
+const hasApiKey = !!process.env.ANTHROPIC_API_KEY;
+const hasCredentials = existsSync(join(homedir(), ".claude", ".credentials.json"));
+
+if (!hasApiKey && !hasCredentials) {
+  console.error("No authentication found.");
+  console.error("");
+  console.error("The harness requires either:");
+  console.error("  1. Claude Code: install and run 'claude login'");
+  console.error("     npm install -g @anthropic-ai/claude-code && claude login");
+  console.error("  2. API key: set ANTHROPIC_API_KEY environment variable");
+  process.exit(1);
 }
 
 // --- Resolve agent ---
