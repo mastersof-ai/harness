@@ -41,7 +41,7 @@
     "check": "biome check && tsc --noEmit"
   },
   "dependencies": {
-    "@anthropic-ai/claude-agent-sdk": "^0.2.62",
+    "@anthropic-ai/claude-agent-sdk": "^0.2.68",
     "@dotenvx/dotenvx": "^1.52.0",
     "@mozilla/readability": "^0.6.0",
     "ink": "^6.8.0",
@@ -58,9 +58,9 @@
     "access": "public"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.4",
+    "@biomejs/biome": "^2.4.5",
     "@types/jsdom": "^28.0.0",
-    "@types/node": "^25.3.2",
+    "@types/node": "^25.3.3",
     "@types/react": "^19.2.14",
     "@types/turndown": "^5.0.6",
     "typescript": "^5.7.0"

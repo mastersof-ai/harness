@@ -320,8 +320,8 @@ export function App({ initialSessionId, initialSessionName, agentContext, config
   const ctrlCTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useInput((input, key) => {
-    // Escape → interrupt streaming
-    if (key.escape && isStreamingRef.current && activeQueryRef.current) {
+    // Bare escape → interrupt streaming (ignore terminal key sequences)
+    if (key.escape && !input && isStreamingRef.current && activeQueryRef.current) {
       activeQueryRef.current.interrupt();
       queueRef.current = [];
       setQueueCount(0);

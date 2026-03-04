@@ -218,10 +218,45 @@ export function MultilineInput({
         return;
       }
 
+      // ── Terminal key sequences (not parsed by Ink) ────────────────
+      // Ink sees the ESC prefix and sets key.escape = true, passing
+      // the rest of the sequence as input.
+
+      if (key.escape) {
+        // Home: ESC[H or ESCOH
+        if (input === "[H" || input === "OH") {
+          setState((s) => ({ ...s, col: 0 }));
+          return;
+        }
+        // End: ESC[F or ESCOF
+        if (input === "[F" || input === "OF") {
+          setState((s) => ({ ...s, col: s.lines[s.row].length }));
+          return;
+        }
+        // Delete: ESC[3~
+        if (input === "[3~") {
+          setState(({ lines, row, col }) => {
+            if (col < lines[row].length) {
+              const next = [...lines];
+              next[row] = lines[row].slice(0, col) + lines[row].slice(col + 1);
+              return { lines: next, row, col };
+            }
+            if (row < lines.length - 1) {
+              const next = [...lines];
+              next[row] += lines[row + 1];
+              next.splice(row + 1, 1);
+              return { lines: next, row, col };
+            }
+            return { lines, row, col };
+          });
+          return;
+        }
+      }
+
       // ── Clear ────────────────────────────────────────────────────
 
-      // Escape → clear input (skip during streaming — App handles interrupt)
-      if (key.escape && !isStreaming) {
+      // Bare escape → clear input (skip during streaming — App handles interrupt)
+      if (key.escape && !input && !isStreaming) {
         setState({ lines: [""], row: 0, col: 0 });
         setHistoryIndex(-1);
         draftRef.current = "";

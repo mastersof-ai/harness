@@ -10,6 +10,23 @@ Write an `IDENTITY.md`, run `mastersof-ai`, and your agent starts with exactly t
 npm install -g @mastersof-ai/harness
 ```
 
+### Linux / Ubuntu
+
+```bash
+# Install Node.js 22.x
+apt-get update && apt-get install -y curl
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+apt-get install -y nodejs
+
+# Install the harness
+npm install -g @mastersof-ai/harness
+```
+
+**Auth prerequisite:** The harness authenticates via Claude Code credentials or an API key. Before first run:
+
+- **Claude Code:** `npm install -g @anthropic-ai/claude-code && claude login`
+- **API key:** `export ANTHROPIC_API_KEY=your-key`
+
 ## Quick Start
 
 ```bash
