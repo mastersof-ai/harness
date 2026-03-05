@@ -9,7 +9,7 @@ export interface HarnessConfig {
   tools: {
     memory: { enabled: boolean };
     workspace: { enabled: boolean };
-    web: { enabled: boolean };
+    web: { enabled: boolean; extraction_model?: string };
     shell: { enabled: boolean };
     tasks: { enabled: boolean };
     introspection: { enabled: boolean };
@@ -92,6 +92,7 @@ tools:
     enabled: true
   web:
     enabled: true
+    # extraction_model: claude-haiku-4-5  # Enables smart extraction for web_fetch
   shell:
     enabled: true
   tasks:

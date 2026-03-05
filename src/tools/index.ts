@@ -6,7 +6,7 @@ import { createMemoryTools } from "./memory.js";
 import { modelQueryTools } from "./model-query.js";
 import { createShellTools } from "./shell.js";
 import { createTaskTools } from "./tasks.js";
-import { webTools } from "./web.js";
+import { createWebTools } from "./web.js";
 import { createWorkspaceTools } from "./workspace.js";
 
 const createServer = (name: string, tools: Parameters<typeof createSdkMcpServer>[0]["tools"]) =>
@@ -21,7 +21,7 @@ export function createAgentServers(ctx: AgentContext, config: HarnessConfig) {
     servers[`${prefix}memory`] = createServer(`${prefix}memory`, createMemoryTools(ctx.memoryDir));
   }
   if (config.tools.web.enabled) {
-    servers[`${prefix}web`] = createServer(`${prefix}web`, webTools);
+    servers[`${prefix}web`] = createServer(`${prefix}web`, createWebTools(config.tools.web));
   }
   if (config.tools.introspection.enabled) {
     servers[`${prefix}introspection`] = createServer(
