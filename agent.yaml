@@ -1,0 +1,42 @@
+spec_version: "0.1.0"
+name: harness
+version: 0.2.0
+description: >
+  An open-source agent runtime where the developer controls the entire system
+  prompt. Agents are defined by a single IDENTITY.md file — no hidden framework
+  instructions, no behaviour injection. Powered by the Claude Agent SDK, the
+  harness provides a terminal TUI for local development and a multi-user web UI
+  (--serve) backed by Fastify + React. Ships with in-process MCP tools
+  (memory, workspace, web-search, shell, tasks, introspection, sub-agents, A2A)
+  and production-ready features including token auth, per-user isolation, rate
+  limiting, cost caps, and LGPD-compliant privacy.
+author: mastersof-ai
+license: MIT
+
+model:
+  preferred: anthropic:claude-sonnet-4-6
+  constraints:
+    max_tokens: 8192
+
+skills:
+  - memory
+  - workspace
+  - web
+  - shell
+  - tasks
+  - introspection
+  - models
+  - scratchpad
+  - a2a
+
+runtime:
+  max_turns: 100
+  timeout: 600
+
+compliance:
+  risk_tier: standard
+  supervision:
+    human_in_the_loop: none
+    kill_switch: true
+  data_governance:
+    pii_handling: redact
